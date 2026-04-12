@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bin/run-*)",
+      "Bash(docker compose:*)",
+      "Bash(grep:*)",
+      "Bash(uv sync:*)",
+      "Bash(ls:*)",
+      "Bash(git worktree:*)",
+      "Bash(chmod:*)",
+      "Bash(uv:*)"
+    ]
+  },
+  "additionalDirectories": []
+}

@@ -10,7 +10,7 @@ If any file can't be loaded, stop execution and report it.
 
 Specific rules for this command:
 
-- Always use git worktree inside the `.claude/worktrees` directory to isolate the agent's development environment.
+- Always use git worktree inside the `src/worktrees` directory (relative to the project root) to isolate the agent's development environment.
 - Never alter the main branch directly (`{{ GIT_MAIN_BRANCH }}`).
 - Do not perform automatic merge/rebase at the end of a workflow. Wait for explicit human approval.
 

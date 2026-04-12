@@ -2,3 +2,19 @@
 .venv/
 *.pyc
 __pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+
+# Pyenv
+.python-version
+
+# Dev-flow workflow artifacts (must not be committed)
+dev-flow/
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/

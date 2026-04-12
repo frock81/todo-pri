@@ -7,7 +7,7 @@ from pathlib import Path
 
 import typer
 
-from todo_cli import llm, parser, scorer, writer
+from todo_pri import llm, parser, scorer, writer
 
 app = typer.Typer(add_completion=False, no_args_is_help=True)
 
@@ -83,7 +83,7 @@ def prioritize(
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Module-style entrypoint usable from ``python -m todo_cli.main``."""
+    """Module-style entrypoint usable from ``python -m todo_pri.main``."""
     try:
         app(args=argv, standalone_mode=False)
     except typer.Exit as exc:

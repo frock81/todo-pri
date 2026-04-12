@@ -1,4 +1,4 @@
-# todo_cli
+# todo_pri
 
 Ferramenta de linha de comando mínima que lê um arquivo `todo.txt`,
 atribui pontuações a cada tarefa via LLM (placeholder mockável) e
@@ -16,13 +16,13 @@ Requisitos: Python ≥ 3.11.
 ## Uso
 
 ```bash
-python -m todo_cli.main <arquivo> [--strategy <nome>] [--dry-run]
+python -m todo_pri.main <arquivo> [--strategy <nome>] [--dry-run]
 ```
 
 Ou, via script instalado:
 
 ```bash
-todo-cli <arquivo> [--strategy <nome>] [--dry-run]
+todo-pri <arquivo> [--strategy <nome>] [--dry-run]
 ```
 
 ### Opções
@@ -70,7 +70,7 @@ Antes de sobrescrever o arquivo, a ferramenta cria um backup em
 ## Arquitetura
 
 ```
-todo_cli/
+src/todo_pri/
 ├── main.py     # Entrypoint Typer — orquestração
 ├── parser.py   # Leitura e limpeza de metadados
 ├── llm.py      # Prompt, chamada (placeholder) e validação
@@ -91,6 +91,6 @@ LLM está fora do escopo atual.
 Linting e formatação:
 
 ```bash
-.venv/bin/ruff check todo_cli tests
-.venv/bin/ruff format --check todo_cli tests
+.venv/bin/ruff check src/todo_pri tests
+.venv/bin/ruff format --check src/todo_pri tests
 ```

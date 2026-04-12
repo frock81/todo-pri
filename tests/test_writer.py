@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from todo_cli import writer
+from todo_pri import writer
 
 
 def test_annotate_task_appends_metadata_in_order() -> None:

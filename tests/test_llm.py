@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from todo_cli import llm
+from todo_pri import llm
 
 
 def test_build_prompt_contains_task_text() -> None:

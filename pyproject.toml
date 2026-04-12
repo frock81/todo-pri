@@ -1,5 +1,5 @@
 [project]
-name = "todo-cli"
+name = "todo-pri"
 version = "0.1.0"
 description = "CLI tool to prioritize todo.txt tasks via LLM scoring"
 requires-python = ">=3.11"
@@ -14,14 +14,15 @@ dev = [
 ]
 
 [project.scripts]
-todo-cli = "todo_cli.main:app"
+todo-pri = "todo_pri.main:app"
 
 [build-system]
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-include = ["todo_cli*"]
+where = ["src"]
+include = ["todo_pri*"]
 exclude = ["tests*", "dev-flow*"]
 
 [tool.ruff]

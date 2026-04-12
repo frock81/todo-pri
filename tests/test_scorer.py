@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from todo_cli import scorer
+from todo_pri import scorer
 
 
 def test_wsjf_simplified_known_values() -> None:

@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from todo_cli import parser
+from todo_pri import parser
 
 
 def test_parse_tasks_ignores_empty_and_whitespace_lines() -> None:

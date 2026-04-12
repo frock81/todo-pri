@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from todo_cli import llm, main
+from todo_pri import llm, main
 
 runner = CliRunner()
 

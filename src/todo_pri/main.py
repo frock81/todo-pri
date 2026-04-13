@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import os
 import sys
+from collections.abc import Callable
 from pathlib import Path
 
 import typer
@@ -12,13 +14,45 @@ from todo_pri import llm, parser, scorer, writer
 app = typer.Typer(add_completion=False, no_args_is_help=True)
 
 
+# TODO: criar um Protocol para a função de chamada do LLM.
+def _get__llm_call_fn() -> Callable[[str], str]:
+    """Return the LLM call function to use, based on environment variables."""
+    if "GOOGLE_API_KEY" in os.environ:
+        try:
+            from todo_pri.google_llm import call_llm as google_call_llm
+
+            return google_call_llm
+        except ImportError:
+            typer.echo(
+                "warning: GOOGLE_API_KEY is set but google_llm module cannot be imported; "
+                "falling back to placeholder LLM.",
+                err=True,
+            )
+            return llm.call_llm
+        return google_call_llm
+    elif "OPENAI_API_KEY" in os.environ:
+        try:
+            from todo_pri.openai_llm import call_llm as openai_call_llm
+
+            return openai_call_llm
+        except ImportError:
+            typer.echo(
+                "warning: OPENAI_API_KEY is set but no OpenAI LLM integration is implemented yet; "
+                "falling back to placeholder LLM.",
+                err=True,
+            )
+    # Future LLM integrations can be added here with additional env vars.
+    return llm.call_llm
+
+
 def _score_tasks(
     tasks: list[str], strategy_name: str
 ) -> list[tuple[str, dict[str, int], int]]:
     """Score each task and return ``(text, scores, score)`` tuples."""
     scored: list[tuple[str, dict[str, int], int]] = []
+    call_llm_fn = _get__llm_call_fn()
     for task in tasks:
-        scores = llm.score_task(task)
+        scores = llm.score_task(task, call_llm_fn=call_llm_fn)
         score = scorer.compute_score(
             strategy_name, scores["value"], scores["urgency"], scores["ease"]
         )

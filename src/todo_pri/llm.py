@@ -7,24 +7,16 @@ strict JSON validation of the scoring contract.
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
+
+from todo_pri.prompt import (
+    build_prompt,
+    get_json_schema_prompt_footer,
+    read_prompt_header,
+)
 
 FALLBACK_SCORES: dict[str, int] = {"value": 3, "urgency": 3, "ease": 3}
 _REQUIRED_KEYS = ("value", "urgency", "ease")
-
-_PROMPT_HEADER = (
-    "You are prioritizing a todo list task.\n"
-    "Rate the task on three dimensions (integers 0-5):\n"
-    "- value: business/personal value delivered\n"
-    "- urgency: how time-sensitive it is\n"
-    "- ease: how easy it is to complete (5 = trivial)\n"
-    'Respond with STRICT JSON only: {"value": int, "urgency": int, "ease": int}.\n'
-    "Task: "
-)
-
-
-def build_prompt(task: str) -> str:
-    """Return the LLM prompt for a single task."""
-    return _PROMPT_HEADER + task
 
 
 def call_llm(prompt: str) -> str:
@@ -44,6 +36,15 @@ def _is_valid_int_in_range(candidate: object) -> bool:
     )
 
 
+def get_prompt_for_task(task: str) -> str:
+    """Return the full prompt for a given task."""
+    return build_prompt(
+        task,
+        read_prompt_header(),
+        get_json_schema_prompt_footer(),
+    )
+
+
 def validate_scores(raw: str) -> dict[str, int]:
     """Parse and validate an LLM JSON response, falling back on errors."""
     try:
@@ -59,6 +60,11 @@ def validate_scores(raw: str) -> dict[str, int]:
     return {key: int(payload[key]) for key in _REQUIRED_KEYS}
 
 
-def score_task(task: str) -> dict[str, int]:
+def score_task(
+    task: str,
+    call_llm_fn: Callable[[str], str] | None = None,
+) -> dict[str, int]:
     """Build a prompt, call the LLM, and return validated scores."""
-    return validate_scores(call_llm(build_prompt(task)))
+    if call_llm_fn is None:
+        call_llm_fn = call_llm
+    return validate_scores(call_llm_fn(get_prompt_for_task(task)))

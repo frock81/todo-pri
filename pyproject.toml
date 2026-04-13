@@ -3,10 +3,21 @@ name = "todo-pri"
 version = "0.1.0"
 description = "CLI tool to prioritize todo.txt tasks via LLM scoring"
 requires-python = ">=3.11"
-dependencies = ["typer>=0.24.1"]
+dependencies = ["typer>=0.24.1", "pydantic>=2.13.0"]
 
 [project.optional-dependencies]
-dev = ["build>=1.4.3", "pytest>=9.0.3", "ruff>=0.15.1", "mypy>=1.20.1"]
+dev = [
+    "build>=1.4.3",
+    "pytest>=9.0.3",
+    "ruff>=0.15.1",
+    "mypy>=1.20.1",
+]
+openai = ["openai>=2.31.0"]
+google = ["google-genai"]
+all = [
+    "openai>=2.31.0",
+    "google-genai>=1.72.0",
+]
 
 [project.scripts]
 todo-pri = "todo_pri.main:app"

@@ -26,4 +26,3 @@ Output format (STRICT JSON ONLY, no explanation):
 }
 
 Task:
-{{TASK_TEXT}}

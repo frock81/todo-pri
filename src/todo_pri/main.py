@@ -24,7 +24,8 @@ def _get__llm_call_fn() -> Callable[[str], str]:
             return google_call_llm
         except ImportError:
             typer.echo(
-                "warning: GOOGLE_API_KEY is set but google_llm module cannot be imported; "
+                "warning: GOOGLE_API_KEY is set but google_llm module "
+                "cannot be imported; "
                 "falling back to placeholder LLM.",
                 err=True,
             )
@@ -37,7 +38,8 @@ def _get__llm_call_fn() -> Callable[[str], str]:
             return openai_call_llm
         except ImportError:
             typer.echo(
-                "warning: OPENAI_API_KEY is set but no OpenAI LLM integration is implemented yet; "
+                "warning: OPENAI_API_KEY is set but no OpenAI LLM "
+                "integration is implemented yet; "
                 "falling back to placeholder LLM.",
                 err=True,
             )

@@ -1,0 +1,3 @@
+Adicionar script no pyproject.toml
+Configurar o UV no repositório local
+(A) Corrigir a config do UV no .envrc

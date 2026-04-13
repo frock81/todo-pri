@@ -3,7 +3,7 @@ from openai import OpenAI
 client = OpenAI()
 
 
-def call_llm(prompt: str) -> dict:
+def call_llm(prompt: str) -> str:
     response = client.responses.create(
         model="gpt-5-mini",
         input=prompt,
@@ -22,5 +22,6 @@ def call_llm(prompt: str) -> dict:
         #     },
         # },
     )
-
-    return response.output[0].content[0].parsed
+    if not isinstance(response.output_text, str):
+        raise ValueError("Expected response output to be a string")
+    return response.output_text

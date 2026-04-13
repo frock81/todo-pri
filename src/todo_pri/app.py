@@ -1,0 +1,112 @@
+import os
+from collections.abc import Callable
+from pathlib import Path
+
+import typer
+
+from todo_pri import llm, parser, scorer, writer
+
+app = typer.Typer(add_completion=False, no_args_is_help=True)
+
+
+# TODO: criar um Protocol para a função de chamada do LLM.
+def _get__llm_call_fn() -> Callable[[str], str]:
+    """Return the LLM call function to use, based on environment variables."""
+    if "GOOGLE_API_KEY" in os.environ:
+        try:
+            from todo_pri.google_llm import call_llm as google_call_llm
+
+            return google_call_llm
+        except ImportError:
+            typer.echo(
+                "warning: GOOGLE_API_KEY is set but google_llm module "
+                "cannot be imported; "
+                "falling back to placeholder LLM.",
+                err=True,
+            )
+            return llm.call_llm
+    elif "OPENAI_API_KEY" in os.environ:
+        try:
+            from todo_pri.openai_llm import call_llm as openai_call_llm
+
+            return openai_call_llm
+        except ImportError:
+            typer.echo(
+                "warning: OPENAI_API_KEY is set but no OpenAI LLM "
+                "integration is implemented yet; "
+                "falling back to placeholder LLM.",
+                err=True,
+            )
+    # Future LLM integrations can be added here with additional env vars.
+    return llm.call_llm
+
+
+def _score_tasks(
+    tasks: list[str], strategy_name: str
+) -> list[tuple[str, dict[str, int], int]]:
+    """Score each task and return ``(text, scores, score)`` tuples."""
+    scored: list[tuple[str, dict[str, int], int]] = []
+    call_llm_fn = _get__llm_call_fn()
+    for task in tasks:
+        scores = llm.score_task(task, call_llm_fn=call_llm_fn)
+        score = scorer.compute_score(
+            strategy_name, scores["value"], scores["urgency"], scores["ease"]
+        )
+        scored.append((task, scores, score))
+    return scored
+
+
+def _sort_and_format(
+    scored: list[tuple[str, dict[str, int], int]],
+) -> list[str]:
+    """Sort scored tasks by score descending and annotate them."""
+    scored.sort(key=lambda item: item[2], reverse=True)
+    return [writer.annotate_task(text, s, score) for text, s, score in scored]
+
+
+def _run(path: str, strategy_name: str, dry_run: bool) -> int:
+    """Execute the full pipeline for a single file."""
+    try:
+        tasks = parser.read_tasks(path)
+    except FileNotFoundError:
+        typer.echo(f"error: file not found: {path}", err=True)
+        return 1
+    except OSError as exc:
+        typer.echo(f"error: cannot read {path}: {exc}", err=True)
+        return 1
+
+    annotated = _sort_and_format(_score_tasks(tasks, strategy_name))
+
+    if dry_run:
+        for line in annotated:
+            typer.echo(line)
+        return 0
+
+    try:
+        if Path(path).exists():
+            writer.backup_file(path)
+        writer.write_tasks(path, annotated)
+    except OSError as exc:
+        typer.echo(f"error: cannot write {path}: {exc}", err=True)
+        return 1
+    return 0
+
+
+@app.command()
+def prioritize(
+    file: str = typer.Argument(..., help="Path to a todo.txt file."),
+    strategy: str = typer.Option(
+        scorer.DEFAULT_STRATEGY,
+        "--strategy",
+        help="Scoring strategy name. Unknown names fall back to default.",
+    ),
+    dry_run: bool = typer.Option(
+        False,
+        "--dry-run",
+        help="Print the result to stdout without modifying the file.",
+    ),
+) -> None:
+    """Read a todo.txt file, score its tasks, and write them back sorted."""
+    exit_code = _run(file, strategy, dry_run)
+    if exit_code != 0:
+        raise typer.Exit(code=exit_code)

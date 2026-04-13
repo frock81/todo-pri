@@ -33,7 +33,7 @@ def get_json_schema_prompt_footer(json_schema: str | None = None) -> str:
 
 def read_prompt_header(prompt_path: str | Path | None = None) -> str:
     if prompt_path is None:
-        prompt_path = files("todo_pri").joinpath("prompt_header.md")
+        prompt_path = Path(str(files("todo_pri").joinpath("prompt_header.md")))
     return Path(prompt_path).read_text()
 
 

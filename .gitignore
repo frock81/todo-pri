@@ -1,19 +1,19 @@
 # Python
-.venv/
+/.venv/
 *.pyc
 __pycache__/
 *.py[cod]
 *$py.class
 *.egg-info/
 
-# Virtual environments
-venv/
+# Build
+/dist/
 
 # Pyenv
 .python-version
 
 # Dev-flow workflow artifacts (must not be committed)
-dev-flow/
+/dev-flow/
 
 # Tooling caches
 .pytest_cache/
